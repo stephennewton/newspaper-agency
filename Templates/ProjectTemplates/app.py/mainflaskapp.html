@@ -1,0 +1,31 @@
+from flask import Flask, render_template, request, redirect, url_for
+
+app = Flask(__name__)
+
+# Store registered clients temporarily in a list (we’ll later use a database)
+clients = []
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['name']
+        address = request.form['address']
+        phone = request.form['phone']
+        
+        # Save client info
+        clients.append({'name': name, 'address': address, 'phone': phone})
+        return redirect(url_for('thank_you', name=name))
+    
+    return render_template('register.html')
+
+@app.route('/thank_you')
+def thank_you():
+    name = request.args.get('name')
+    return render_template('thank_you.html', name=name)
+
+if __name__ == '__main__':
+    app.run(debug=True)
